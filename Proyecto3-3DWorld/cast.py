@@ -16,17 +16,17 @@ colors = [
 ]
 
 walls = {
-    "1": pygame.image.load('./Proyecto3-3DWorld/wall1.png'),
-    "2": pygame.image.load('./Proyecto3-3DWorld/wall2.png'),
-    "3": pygame.image.load('./Proyecto3-3DWorld/wall3.png'),
-    "4": pygame.image.load('./Proyecto3-3DWorld/wall4.png'),
-    "5": pygame.image.load('./Proyecto3-3DWorld/wall5.png'),
+    "1": pygame.image.load('./Proyecto3-3DWorld/Walls/wall1.png'),
+    "2": pygame.image.load('./Proyecto3-3DWorld/Walls/wall2.png'),
+    "3": pygame.image.load('./Proyecto3-3DWorld/Walls/wall3.png'),
+    "4": pygame.image.load('./Proyecto3-3DWorld/Walls/wall4.png'),
+    "5": pygame.image.load('./Proyecto3-3DWorld/Walls/wall5.png'),
 }
 
-sprite1 = pygame.image.load('./Proyecto3-3DWorld/sprite1.png')
-sprite2 = pygame.image.load('./Proyecto3-3DWorld/sprite2.png')
-sprite3 = pygame.image.load('./Proyecto3-3DWorld/sprite3.png')
-sprite4 = pygame.image.load('./Proyecto3-3DWorld/sprite4.png')
+sprite1 = pygame.image.load('./Proyecto3-3DWorld/Sprites/sprite1.png')
+sprite2 = pygame.image.load('./Proyecto3-3DWorld/Sprites/sprite2.png')
+sprite3 = pygame.image.load('./Proyecto3-3DWorld/Sprites/sprite3.png')
+sprite4 = pygame.image.load('./Proyecto3-3DWorld/Sprites/sprite4.png')
 
 enemies = [
     {
