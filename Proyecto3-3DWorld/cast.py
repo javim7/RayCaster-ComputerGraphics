@@ -21,6 +21,8 @@ walls = {
     "3": pygame.image.load('./Proyecto3-3DWorld/Walls/wall3.png'),
     "4": pygame.image.load('./Proyecto3-3DWorld/Walls/wall4.png'),
     "5": pygame.image.load('./Proyecto3-3DWorld/Walls/wall5.png'),
+    "6": pygame.image.load('./Proyecto3-3DWorld/Walls/wall6.png'),
+    "7": pygame.image.load('./Proyecto3-3DWorld/Walls/lights.png'),
 }
 
 sprite1 = pygame.image.load('./Proyecto3-3DWorld/Sprites/sprite1.png')
@@ -47,6 +49,10 @@ class Raycaster(object):
         self.screen = screen
         x, y, self.width, self.height = screen.get_rect()
         self.blocksize = 50
+        self.wallsize = 64
+        self.spritesize = 64
+        self.i = 0
+        self.j = 0
         self.scale = 10
         self.player = {
             "x": int(self.blocksize + self.blocksize / 2),
@@ -67,8 +73,8 @@ class Raycaster(object):
     def block(self, x, y, wall):
         for i in range(x, x + self.blocksize):
             for j in range(y, y + self.blocksize):
-                tx = int((i - x) * 128 / self.blocksize)
-                ty = int((j - y) * 128 / self.blocksize)
+                tx = int((i - x) * self.wallsize / self.blocksize)
+                ty = int((j - y) * self.wallsize / self.blocksize)
                 c = wall.get_at((tx, ty))
                 self.point(i, j, c)
 
@@ -80,10 +86,10 @@ class Raycaster(object):
     def draw_map(self):
         for x in range(0, 500, self.blocksize):
             for y in range(0, 500, self.blocksize):
-                i = int(x/self.blocksize)
-                j = int(y/self.blocksize)
-                if self.map[j][i] != ' ':
-                    self.block(x, y, walls[self.map[j][i]])
+                self.i = int(x/self.blocksize)
+                self.j = int(y/self.blocksize)
+                if self.map[self.j][self.i] != ' ':
+                    self.block(x, y, walls[self.map[self.j][self.i]])
 
     def draw_player(self):
         self.point(self.player["x"], self.player["y"])
@@ -111,8 +117,8 @@ class Raycaster(object):
 
         for x in range(sprite_x, sprite_x + sprite_size):
             for y in range(sprite_y, sprite_y + sprite_size):
-                tx = int((x - sprite_x) * 128 / sprite_size)
-                ty = int((y - sprite_y) * 128 / sprite_size)
+                tx = int((x - sprite_x) * self.wallsize / sprite_size)
+                ty = int((y - sprite_y) * self.wallsize / sprite_size)
 
                 c = sprite["sprite"].get_at((tx, ty))
 
@@ -128,7 +134,7 @@ class Raycaster(object):
         height = end_y - start_y
 
         for y in range(start_y, end_y):
-            ty = int((y - start_y) * 128 / height)
+            ty = int((y - start_y) * self.wallsize / height)
             color = walls[c].get_at((tx, ty))
             self.point(x, y, color)
 
@@ -153,7 +159,7 @@ class Raycaster(object):
                 else:
                     maxhit = hity
 
-                tx = int(maxhit * 128 / self.blocksize)
+                tx = int(maxhit * self.wallsize / self.blocksize)
                 return d, self.map[j][i], tx
 
             self.point(x, y)
@@ -170,6 +176,10 @@ class Raycaster(object):
             a = self.player["a"] - self.player["fov"] / \
                 2 + self.player["fov"]*i/density
             d, c, tx = self.cast_ray(a)
+
+        # dibujar punto rojo en minimapa
+        for enemy in enemies:
+            self.point(enemy["x"], enemy["y"], (255, 0, 0))
 
         # line
         for i in range(0, 500):
@@ -191,43 +201,6 @@ class Raycaster(object):
                 self.draw_stake(x, h, c, tx)
                 self.zbuffer[i] = d
 
-        for enemy in enemies:
-            self.point(enemy["x"], enemy["y"], (255, 0, 0))
-
+        # dibujar enemigos
         for enemy in enemies:
             self.draw_sprite(enemy)
-
-
-pygame.init()
-screen = pygame.display.set_mode((1000, 500))
-r = Raycaster(screen)
-r.load_map("./Proyecto3-3DWorld/map.txt")
-
-running = True
-while running:
-    screen.fill(BLACK, (0, 0, r.width/2, r.height))
-    screen.fill(SKY, (r.width/2, 0, r.width, r.height/2))
-    screen.fill(GROUND, (r.width/2, r.height/2, r.width, r.height/2))
-    r.clearZ()
-    r.render()
-
-    pygame.display.flip()
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_a:
-                r.player["a"] -= pi/25
-            if event.key == pygame.K_d:
-                r.player["a"] += pi/25
-
-            if event.key == pygame.K_RIGHT:
-                r.player["x"] += 10
-            if event.key == pygame.K_LEFT:
-                r.player["x"] -= 10
-            if event.key == pygame.K_UP:
-                r.player["y"] -= 10
-            if event.key == pygame.K_DOWN:
-                r.player["y"] += 10
