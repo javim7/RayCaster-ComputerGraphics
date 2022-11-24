@@ -8,12 +8,13 @@ from pygame import mixer
 pygame.init()
 screen = pygame.display.set_mode((1000, 500))
 r = Raycaster(screen)
-r.load_map("./Proyecto3-3DWorld/map.txt")
+r.load_map("./Proyecto3-RayCaster/map.txt")
 
 
 mixer.init()
-footsteps = pygame.mixer.Sound("./Proyecto3-3DWorld/SFX/footsteps2.mp3")
-mixer.music.load('Proyecto3-3DWorld/SFX/mysterious-music.mp3')
+footsteps = pygame.mixer.Sound("./Proyecto3-RayCaster/SFX/footsteps2.mp3")
+shot = pygame.mixer.Sound("./Proyecto3-RayCaster/SFX/shot.mp3")
+mixer.music.load('Proyecto3-RayCaster/SFX/mysterious-music.mp3')
 mixer.music.play()
 
 
@@ -23,9 +24,13 @@ def render_fondo(imagen):
             r.point(x, y, imagen.get_at((x, y)))
 
 
-imgBienvenida = pygame.image.load("Proyecto3-3DWorld/Backgrounds/clue.jpg")
+imgBienvenida = pygame.image.load("Proyecto3-RayCaster/Backgrounds/START.png")
+imgControls = pygame.image.load("Proyecto3-RayCaster/Backgrounds/CONTROLS.png")
+imgCompletado = pygame.image.load("Proyecto3-RayCaster/Backgrounds/FINISH.png")
 
 bienvenida = True
+controls = False
+completado = False
 while bienvenida:
     render_fondo(imgBienvenida)
 
@@ -38,10 +43,20 @@ while bienvenida:
             if event.key == pygame.K_RETURN:
                 bienvenida = False
             if event.key == pygame.K_ESCAPE:
-                pygame.quit()
+                bienvenida = False
+                controls = True
 
-clock = pygame.time.Clock()
-font = pygame.font.SysFont("Arial", 20, bold=True)
+while controls:
+    render_fondo(imgControls)
+
+    pygame.display.flip()
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                controls = False
 
 running = True
 while running:
@@ -58,6 +73,9 @@ while running:
             running = False
 
         if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_f:
+                pygame.mixer.Sound.play(shot)
+
             if event.key == pygame.K_a:
                 r.player["a"] -= pi/25
             if event.key == pygame.K_d:
@@ -70,9 +88,18 @@ while running:
             if event.key == pygame.K_LEFT:
                 r.player["x"] -= 10
                 pygame.mixer.Sound.play(footsteps)
-            if event.key == pygame.K_UP:
+            if event.key == pygame.K_UP or event.key == pygame.K_w:
                 r.player["y"] -= 10
                 pygame.mixer.Sound.play(footsteps)
-            if event.key == pygame.K_DOWN:
+            if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                 r.player["y"] += 10
                 pygame.mixer.Sound.play(footsteps)
+
+while completado:
+    render_fondo(imgCompletado)
+
+    pygame.display.flip()
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
