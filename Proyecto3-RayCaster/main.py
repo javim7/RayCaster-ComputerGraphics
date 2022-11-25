@@ -4,9 +4,12 @@ import pygame
 from math import *
 from pygame.locals import *
 from pygame import mixer
+import time
 
 pygame.init()
 screen = pygame.display.set_mode((1000, 500))
+clock = pygame.time.Clock()
+font = pygame.font.SysFont("Arial", 18)
 r = Raycaster(screen)
 r.load_map("./Proyecto3-RayCaster/map.txt")
 
@@ -16,6 +19,30 @@ footsteps = pygame.mixer.Sound("./Proyecto3-RayCaster/SFX/footsteps2.mp3")
 shot = pygame.mixer.Sound("./Proyecto3-RayCaster/SFX/shot.mp3")
 mixer.music.load('Proyecto3-RayCaster/SFX/mysterious-music.mp3')
 mixer.music.play()
+
+muertos = 0
+
+
+def update_fps():
+    fps = str(round(float(clock.get_fps()), 3))
+    fps_text = font.render("FPS = " + fps, 1, pygame.Color("White"))
+    return fps_text
+
+
+def update_enemies():
+    global muertos
+    enemies_text = font.render(
+        "Killed = " + str(muertos) + "/5", 1, pygame.Color("White"))
+    return enemies_text
+
+
+def kill_enemy():
+    global muertos
+    pygame.mixer.Sound.play(shot)
+    for enemy in enemies:
+        if enemy["canDie"] and enemy["alive"]:
+            enemy["alive"] = False
+            muertos += 1
 
 
 def render_fondo(imagen):
@@ -63,9 +90,13 @@ while running:
     screen.fill(BLACK, (0, 0, r.width/2, r.height))
     screen.fill(SKY, (r.width/2, 0, r.width, r.height/2))
     screen.fill(GROUND, (r.width/2, r.height/2, r.width, r.height/2))
+
     r.clearZ()
     r.render()
 
+    screen.blit(update_fps(), (r.width - 85, r.height - 480))
+    screen.blit(update_enemies(), ((r.width / 2) + 10, r.height - 480))
+    clock.tick(60)
     pygame.display.flip()
 
     for event in pygame.event.get():
@@ -74,7 +105,7 @@ while running:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_f:
-                pygame.mixer.Sound.play(shot)
+                kill_enemy()
 
             if event.key == pygame.K_a:
                 r.player["a"] -= pi/25
@@ -94,6 +125,11 @@ while running:
             if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                 r.player["y"] += 10
                 pygame.mixer.Sound.play(footsteps)
+
+    if muertos == 2:
+        time.sleep(1)
+        running = False
+        completado = True
 
 while completado:
     render_fondo(imgCompletado)

@@ -1,5 +1,12 @@
 import pygame
+import time
 from math import *
+from pygame.locals import *
+from pygame import mixer
+
+
+mixer.init()
+zombieGrowl = pygame.mixer.Sound("./Proyecto3-RayCaster/SFX/zombie.mp3")
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -24,7 +31,7 @@ walls = {
     "6": pygame.image.load('./Proyecto3-RayCaster/Walls/wall6.png'),
 }
 
-sprite1 = pygame.image.load('./Proyecto3-RayCaster/Sprites/SD.gif')
+sprite1 = pygame.image.load('./Proyecto3-RayCaster/Sprites/zombie.png')
 sprite2 = pygame.image.load('./Proyecto3-RayCaster/Sprites/sprite2.png')
 sprite3 = pygame.image.load('./Proyecto3-RayCaster/Sprites/sprite3.png')
 sprite4 = pygame.image.load('./Proyecto3-RayCaster/Sprites/sprite4.png')
@@ -32,13 +39,38 @@ sprite4 = pygame.image.load('./Proyecto3-RayCaster/Sprites/sprite4.png')
 enemies = [
     {
         "x": 120,
-        "y": 120,
+        "y": 200,
+        "alive": True,
+        "canDie": False,
         "sprite": sprite1
     },
     {
-        "x": 300,
-        "y": 300,
+        "x": 250,
+        "y": 370,
+        "alive": True,
+        "canDie": False,
         "sprite": sprite2
+    },
+    {
+        "x": 75,
+        "y": 430,
+        "alive": True,
+        "canDie": False,
+        "sprite": sprite3
+    },
+    {
+        "x": 440,
+        "y": 430,
+        "alive": True,
+        "canDie": False,
+        "sprite": sprite4
+    },
+    {
+        "x": 440,
+        "y": 80,
+        "alive": True,
+        "canDie": False,
+        "sprite": sprite1
     }
 ]
 
@@ -48,8 +80,8 @@ class Raycaster(object):
         self.screen = screen
         x, y, self.width, self.height = screen.get_rect()
         self.blocksize = 50
-        self.wallsize = 64
-        self.spritesize = 64
+        self.wallsize = 128
+        self.spritesize = 128
         self.i = 0
         self.j = 0
         self.scale = 10
@@ -103,6 +135,13 @@ class Raycaster(object):
             (self.player["x"] - sprite["x"])**2 +
             (self.player["y"] - sprite["y"])**2
         ) ** 0.5
+
+        playSound = True
+        if d < 100:
+            sprite["canDie"] = True
+            if playSound:
+                playSound = False
+                pygame.mixer.Sound.play(zombieGrowl)
 
         sprite_size = int(((self.width/2)/d) * self.height/self.scale)
 
@@ -178,7 +217,8 @@ class Raycaster(object):
 
         # dibujar punto rojo en minimapa
         for enemy in enemies:
-            self.point(enemy["x"], enemy["y"], (255, 0, 0))
+            if enemy["alive"]:
+                self.point(enemy["x"], enemy["y"], (255, 0, 0))
 
         # line
         for i in range(0, 500):
@@ -202,4 +242,5 @@ class Raycaster(object):
 
         # dibujar enemigos
         for enemy in enemies:
-            self.draw_sprite(enemy)
+            if enemy["alive"]:
+                self.draw_sprite(enemy)
