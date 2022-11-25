@@ -1,5 +1,4 @@
 import pygame
-import time
 from math import *
 from pygame.locals import *
 from pygame import mixer
@@ -7,6 +6,8 @@ from pygame import mixer
 
 mixer.init()
 zombieGrowl = pygame.mixer.Sound("./Proyecto3-RayCaster/SFX/zombie.mp3")
+footsteps = pygame.mixer.Sound("./Proyecto3-RayCaster/SFX/footsteps2.mp3")
+
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -31,46 +32,52 @@ walls = {
     "6": pygame.image.load('./Proyecto3-RayCaster/Walls/wall6.png'),
 }
 
-sprite1 = pygame.image.load('./Proyecto3-RayCaster/Sprites/zombie.png')
-sprite2 = pygame.image.load('./Proyecto3-RayCaster/Sprites/sprite2.png')
-sprite3 = pygame.image.load('./Proyecto3-RayCaster/Sprites/sprite3.png')
-sprite4 = pygame.image.load('./Proyecto3-RayCaster/Sprites/sprite4.png')
+zombie1 = pygame.image.load('./Proyecto3-RayCaster/Sprites/zombie1.png')
+zombie2 = pygame.image.load('./Proyecto3-RayCaster/Sprites/zombie2.png')
+zombie3 = pygame.image.load('./Proyecto3-RayCaster/Sprites/zombie3.png')
+zombie4 = pygame.image.load('./Proyecto3-RayCaster/Sprites/zombie4.png')
+zombie5 = pygame.image.load('./Proyecto3-RayCaster/Sprites/zombie5.png')
 
 enemies = [
     {
-        "x": 120,
-        "y": 200,
+        "x": 100,
+        "y": 220,
         "alive": True,
         "canDie": False,
-        "sprite": sprite1
+        "playSound": True,
+        "sprite": zombie1
     },
     {
         "x": 250,
         "y": 370,
         "alive": True,
         "canDie": False,
-        "sprite": sprite2
+        "playSound": True,
+        "sprite": zombie2
     },
     {
         "x": 75,
-        "y": 430,
+        "y": 400,
         "alive": True,
         "canDie": False,
-        "sprite": sprite3
+        "playSound": True,
+        "sprite": zombie3
     },
     {
         "x": 440,
         "y": 430,
         "alive": True,
         "canDie": False,
-        "sprite": sprite4
+        "playSound": True,
+        "sprite": zombie4
     },
     {
         "x": 440,
         "y": 80,
         "alive": True,
         "canDie": False,
-        "sprite": sprite1
+        "playSound": True,
+        "sprite": zombie5
     }
 ]
 
@@ -85,6 +92,8 @@ class Raycaster(object):
         self.i = 0
         self.j = 0
         self.scale = 10
+        self.collision = True
+        self.previousMove = None
         self.player = {
             "x": int(self.blocksize + self.blocksize / 2),
             "y": int(self.blocksize + self.blocksize / 2),
@@ -94,6 +103,7 @@ class Raycaster(object):
         self.zbuffer = [99999 for z in range(0, int(self.width/2))]
         self.map = []
         self.clearZ()
+        self.playSound = True
 
     def clearZ(self):
         self.zbuffer = [99999 for z in range(0, int(self.width/2))]
@@ -114,6 +124,15 @@ class Raycaster(object):
             for line in f.readlines():
                 self.map.append(list(line))
 
+    def check_out_bounds(self):
+        for i in range(0, int(self.width)):
+            a = self.player["a"] - self.player["fov"] / 2 + \
+                self.player["fov"] * i / (self.width / 2)
+            d, c, tx = self.cast_ray(a)
+            if d <= 10:
+                return True
+        return False
+
     def draw_map(self):
         for x in range(0, 500, self.blocksize):
             for y in range(0, 500, self.blocksize):
@@ -124,6 +143,11 @@ class Raycaster(object):
 
     def draw_player(self):
         self.point(self.player["x"], self.player["y"])
+
+    def play_sound(self, sprite):
+        while sprite["playSound"]:
+            pygame.mixer.Sound.play(zombieGrowl)
+            sprite["playSound"] = False
 
     def draw_sprite(self, sprite):
         sprite_a = atan2(
@@ -136,12 +160,9 @@ class Raycaster(object):
             (self.player["y"] - sprite["y"])**2
         ) ** 0.5
 
-        playSound = True
         if d < 100:
             sprite["canDie"] = True
-            if playSound:
-                playSound = False
-                pygame.mixer.Sound.play(zombieGrowl)
+            self.play_sound(sprite)
 
         sprite_size = int(((self.width/2)/d) * self.height/self.scale)
 
@@ -233,14 +254,49 @@ class Raycaster(object):
                 2 + self.player["fov"]*i/(self.width/2)
             d, c, tx = self.cast_ray(a)
             x = int(self.width/2) + i
-            h = (self.height /
-                 (d * cos(a - self.player["a"]))) * self.height/self.scale
 
-            if self.zbuffer[i] >= d:
-                self.draw_stake(x, h, c, tx)
-                self.zbuffer[i] = d
+            try:
+                self.collision = True
+                h = (self.height /
+                     (d * cos(a - self.player["a"]))) * self.height/self.scale
+                if self.zbuffer[i] >= d:
+                    self.draw_stake(x, h, c, tx)
+                    self.zbuffer[i] = d
+            except ZeroDivisionError:
+                self.collision = False
+                self.movimiento()
 
         # dibujar enemigos
         for enemy in enemies:
             if enemy["alive"]:
                 self.draw_sprite(enemy)
+
+    def movimiento(self, event=None):
+
+        if event == None:
+            event = self.previousMove
+
+        if event.key == pygame.K_RIGHT:
+            if self.collision:
+                self.player["x"] += 10
+                pygame.mixer.Sound.play(footsteps)
+            else:
+                self.player["x"] -= 10
+        if event.key == pygame.K_LEFT:
+            if self.collision:
+                self.player["x"] -= 10
+                pygame.mixer.Sound.play(footsteps)
+            else:
+                self.player["x"] += 10
+        if event.key == pygame.K_UP or event.key == pygame.K_w:
+            if self.collision:
+                self.player["y"] -= 10
+                pygame.mixer.Sound.play(footsteps)
+            else:
+                self.player["y"] += 10
+        if event.key == pygame.K_DOWN or event.key == pygame.K_s:
+            if self.collision:
+                self.player["y"] += 10
+                pygame.mixer.Sound.play(footsteps)
+            else:
+                self.player["y"] -= 10

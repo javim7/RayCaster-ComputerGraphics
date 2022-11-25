@@ -12,13 +12,13 @@ clock = pygame.time.Clock()
 font = pygame.font.SysFont("Arial", 18)
 r = Raycaster(screen)
 r.load_map("./Proyecto3-RayCaster/map.txt")
-
+crosshair = pygame.image.load("./Proyecto3-RayCaster/Sprites/crosshair.png")
+gunPOV = pygame.image.load("./Proyecto3-RayCaster/Sprites/gunPOV.png")
 
 mixer.init()
-footsteps = pygame.mixer.Sound("./Proyecto3-RayCaster/SFX/footsteps2.mp3")
 shot = pygame.mixer.Sound("./Proyecto3-RayCaster/SFX/shot.mp3")
 mixer.music.load('Proyecto3-RayCaster/SFX/mysterious-music.mp3')
-mixer.music.play()
+mixer.music.play(-1)
 
 muertos = 0
 
@@ -96,6 +96,8 @@ while running:
 
     screen.blit(update_fps(), (r.width - 85, r.height - 480))
     screen.blit(update_enemies(), ((r.width / 2) + 10, r.height - 480))
+    screen.blit(crosshair, (r.width - 300, r.height/2 - 60))
+    screen.blit(gunPOV, (r.width - 350, r.height/2))
     clock.tick(60)
     pygame.display.flip()
 
@@ -112,21 +114,10 @@ while running:
             if event.key == pygame.K_d:
                 r.player["a"] += pi/25
 
-            a = r.player["a"]
-            if event.key == pygame.K_RIGHT:
-                r.player["x"] += 10
-                pygame.mixer.Sound.play(footsteps)
-            if event.key == pygame.K_LEFT:
-                r.player["x"] -= 10
-                pygame.mixer.Sound.play(footsteps)
-            if event.key == pygame.K_UP or event.key == pygame.K_w:
-                r.player["y"] -= 10
-                pygame.mixer.Sound.play(footsteps)
-            if event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                r.player["y"] += 10
-                pygame.mixer.Sound.play(footsteps)
+            r.previousMove = event
+            r.movimiento(event)
 
-    if muertos == 2:
+    if muertos == 5:
         time.sleep(1)
         running = False
         completado = True
