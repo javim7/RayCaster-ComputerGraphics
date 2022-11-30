@@ -11,13 +11,13 @@ screen = pygame.display.set_mode((1000, 500))
 clock = pygame.time.Clock()
 font = pygame.font.SysFont("Arial", 18)
 r = Raycaster(screen)
-r.load_map("./Proyecto3-RayCaster/map.txt")
-crosshair = pygame.image.load("./Proyecto3-RayCaster/Sprites/crosshair.png")
-gunPOV = pygame.image.load("./Proyecto3-RayCaster/Sprites/gunPOV.png")
+r.load_map("./map.txt")
+crosshair = pygame.image.load("./Sprites/crosshair.png")
+gunPOV = pygame.image.load("./Sprites/gunPOV.png")
 
 mixer.init()
-shot = pygame.mixer.Sound("./Proyecto3-RayCaster/SFX/shot.mp3")
-mixer.music.load('Proyecto3-RayCaster/SFX/mysterious-music.mp3')
+shot = pygame.mixer.Sound("./SFX/shot.mp3")
+mixer.music.load('./SFX/mysterious-music.mp3')
 mixer.music.play(-1)
 
 muertos = 0
@@ -51,9 +51,9 @@ def render_fondo(imagen):
             r.point(x, y, imagen.get_at((x, y)))
 
 
-imgBienvenida = pygame.image.load("Proyecto3-RayCaster/Backgrounds/START.png")
-imgControls = pygame.image.load("Proyecto3-RayCaster/Backgrounds/CONTROLS.png")
-imgCompletado = pygame.image.load("Proyecto3-RayCaster/Backgrounds/FINISH.png")
+imgBienvenida = pygame.image.load("./Backgrounds/START.png")
+imgControls = pygame.image.load("./Backgrounds/CONTROLS.png")
+imgCompletado = pygame.image.load("./Backgrounds/FINISH.png")
 
 bienvenida = True
 controls = False

@@ -5,8 +5,8 @@ from pygame import mixer
 
 
 mixer.init()
-zombieGrowl = pygame.mixer.Sound("./Proyecto3-RayCaster/SFX/zombie.mp3")
-footsteps = pygame.mixer.Sound("./Proyecto3-RayCaster/SFX/footsteps2.mp3")
+zombieGrowl = pygame.mixer.Sound("./SFX/zombie.mp3")
+footsteps = pygame.mixer.Sound("./SFX/footsteps2.mp3")
 
 
 WHITE = (255, 255, 255)
@@ -24,19 +24,19 @@ colors = [
 ]
 
 walls = {
-    "1": pygame.image.load('./Proyecto3-RayCaster/Walls/wall1.png'),
-    "2": pygame.image.load('./Proyecto3-RayCaster/Walls/wall2.png'),
-    "3": pygame.image.load('./Proyecto3-RayCaster/Walls/wall3.png'),
-    "4": pygame.image.load('./Proyecto3-RayCaster/Walls/wall4.png'),
-    "5": pygame.image.load('./Proyecto3-RayCaster/Walls/wall5.png'),
-    "6": pygame.image.load('./Proyecto3-RayCaster/Walls/wall6.png'),
+    "1": pygame.image.load('./Walls/wall1.png'),
+    "2": pygame.image.load('./Walls/wall2.png'),
+    "3": pygame.image.load('./Walls/wall3.png'),
+    "4": pygame.image.load('./Walls/wall4.png'),
+    "5": pygame.image.load('./Walls/wall5.png'),
+    "6": pygame.image.load('./Walls/wall6.png'),
 }
 
-zombie1 = pygame.image.load('./Proyecto3-RayCaster/Sprites/zombie1.png')
-zombie2 = pygame.image.load('./Proyecto3-RayCaster/Sprites/zombie2.png')
-zombie3 = pygame.image.load('./Proyecto3-RayCaster/Sprites/zombie3.png')
-zombie4 = pygame.image.load('./Proyecto3-RayCaster/Sprites/zombie4.png')
-zombie5 = pygame.image.load('./Proyecto3-RayCaster/Sprites/zombie5.png')
+zombie1 = pygame.image.load('./Sprites/zombie1.png')
+zombie2 = pygame.image.load('./Sprites/zombie2.png')
+zombie3 = pygame.image.load('./Sprites/zombie3.png')
+zombie4 = pygame.image.load('./Sprites/zombie4.png')
+zombie5 = pygame.image.load('./Sprites/zombie5.png')
 
 enemies = [
     {
